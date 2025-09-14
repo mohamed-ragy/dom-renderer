@@ -12,13 +12,13 @@ It converts plain JS objects into real DOM nodes, with support for:
 
 ---
 
-## ❓ When to use DomRenderer
+## When to use DomRenderer
 
 DomRenderer is useful when you need to build **lightweight UI components** without pulling in heavy frameworks.
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install @ragyjs/dom-renderer
@@ -28,7 +28,7 @@ npm install @ragyjs/dom-renderer
 
 ---
 
-## 🚀 Quick Example
+## Quick Example
 
 ```html
 <div id="app"></div>
@@ -60,7 +60,7 @@ Array.isArray(node)
 
 ---
 
-## 🔧 VNode structure
+## VNode structure
 
 A VNode can be:
 
@@ -92,7 +92,7 @@ A VNode can be:
 
 ---
 
-## ⚙️ API
+## API
 
 ### `new DomRenderer(options?)`
 
@@ -113,7 +113,7 @@ A VNode can be:
 
 ---
 
-## 🎛 Events
+## Events
 
 -   Simple function:
     ```js
@@ -156,7 +156,7 @@ But for most usage, **`.abort()` is all you need**.
 
 ---
 
-## 🎨 Attributes & Styles
+## Attributes & Styles
 
 ```js
 attr: {
@@ -172,7 +172,7 @@ style: {
 
 ---
 
-## 👶 Children
+## Children
 
 ```js
 children: [
@@ -191,10 +191,10 @@ const vnode = {
                 if (item === "banana") {
                     return {
                         tag: "li",
-                        text: `🍌 oh no! ${item} is not an animal 😆`,
+                        text: `${item} is not an animal!`,
                     };
                 }
-                return { tag: "li", text: `🐾 I am a ${item}` };
+                return { tag: "li", text: `I am a ${item}` };
             }),
     ],
 };
@@ -202,7 +202,7 @@ const vnode = {
 
 ---
 
-## ⚠️ HTML (trusted only)
+## HTML (trusted only)
 
 ```js
 {
@@ -214,6 +214,6 @@ const vnode = {
 
 ---
 
-## 📜 License
+## License
 
 MIT © Ragy — see [LICENSE](./LICENSE)
