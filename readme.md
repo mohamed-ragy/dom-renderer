@@ -55,7 +55,7 @@ const node = r.render(vnode);
 
 Array.isArray(node)
     ? root.append(...node)
-    : root.append(out);
+    : root.append(node);
 ```
 
 ---
