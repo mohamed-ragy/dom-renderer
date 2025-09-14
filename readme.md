@@ -31,7 +31,9 @@ import { DomRenderer } from '@ragyjs/dom-renderer';
 
 ```html
 <div id="app"></div>
+
 <script type="module">
+
   import { DomRenderer } from '@ragyjs/dom-renderer';
 
   const r = new DomRenderer();
@@ -46,9 +48,9 @@ import { DomRenderer } from '@ragyjs/dom-renderer';
   };
 
   const out = r.render(vnode);
-  (Array.isArray(out) ? out : [out]).forEach(n =>
-    document.getElementById('app').appendChild(n)
-  );
+  
+  document.getElementById('app').append(out);
+
 </script>
 ```
 

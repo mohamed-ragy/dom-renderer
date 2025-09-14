@@ -91,7 +91,7 @@ export class DomRenderer {
         if ('on' in node) {
             for (const [event, val] of Object.entries(node.on)) {
                 let fn;
-                const options = {};
+                let options = {};
                 const signal = node.signal ?? this.signal;
                 if (signal) options.signal = signal;
 
