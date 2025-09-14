@@ -11,6 +11,9 @@
     },
     "main": "index.js",
     "browser": "./index.js",
+    "engines": {
+        "node": ">=18"
+    },
     "sideEffects": false,
     "keywords": [
         "dom",
@@ -27,5 +30,13 @@
     ],
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mohamed-ragy/dom-renderer.git"
+    },
+    "bugs": {
+        "url": "https://github.com/mohamed-ragy/dom-renderer/issues"
+    },
+    "homepage": "https://github.com/mohamed-ragy/dom-renderer#readme"
 }

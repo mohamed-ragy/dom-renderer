@@ -77,9 +77,9 @@ export class DomRenderer {
             }
         }
 
-        if ('text' in node) el.appendChild(document.createTextNode(node.text));
+        if ('text' in node && node.text != null && node.text !== false) el.appendChild(document.createTextNode(String(node.text)));
 
-        if ('html' in node) el.insertAdjacentHTML('beforeend', node.html);
+        if ('html' in node && node.html != null && node.html !== false) el.insertAdjacentHTML('beforeend', String(node.html));
         
         if (node.children != null && node.children !== false) {
             const children = typeof node.children === 'function' ? node.children() : node.children;

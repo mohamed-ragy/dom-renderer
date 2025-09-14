@@ -1,214 +1,219 @@
 # @ragyjs/dom-renderer
 
-Lightweight, zero-dependency DOM renderer for building tiny UI components without frameworks.
+A **tiny DOM renderer** for building UI without frameworks.  
+It converts plain JS objects into real DOM nodes, with support for:
 
-- **Zero deps**
-- **Pure ESM**
-- **Event helpers:** debounce/throttle
-- **Abortable listeners** via `AbortController`
+-   **Attributes & styles**
+-   **Children**
+-   **Dynamic children with functions**
+-   **Event listeners** (with debounce & throttle)
+-   **Abortable listeners** via `AbortController`
+-   **Zero dependencies**
 
 ---
 
-## Install
+## ❓ When to use DomRenderer
+
+DomRenderer is useful when you need to build **lightweight UI components** without pulling in heavy frameworks.
+
+---
+
+## 📦 Installation
 
 ```bash
-npm i @ragyjs/dom-renderer
+npm install @ragyjs/dom-renderer
 ```
 
-> This package is ESM-only. Use Node 18+ or any modern bundler for the browser.
+> ESM-only. Works with Node 18+ or any modern bundler (Vite, Webpack, etc.).
 
 ---
 
-## Import
-
-```js
-import { DomRenderer } from '@ragyjs/dom-renderer';
-```
-
----
-
-## Quick start
+## 🚀 Quick Example
 
 ```html
 <div id="app"></div>
+```
 
-<script type="module">
+```js
+import { DomRenderer } from "@ragyjs/dom-renderer";
 
-  import { DomRenderer } from '@ragyjs/dom-renderer';
+const r = new DomRenderer();
 
-  const r = new DomRenderer();
 
-  const vnode = {
-    tag: 'button',
-    class: 'btn',
-    text: 'Click me',
+const vnode = {
+    tag: "button",
+    class: "btn",
+    text: "Click me!",
     on: {
-      click: () => alert('Hello!')
-    }
-  };
+        click: () => alert("Hello World"),
+    },
+};
 
-  const out = r.render(vnode);
-  
-  document.getElementById('app').append(out);
+const root = document.getElementById('app');
 
-</script>
+const node = r.render(vnode);
+
+Array.isArray(node)
+    ? root.append(...node)
+    : root.append(out);
 ```
 
 ---
 
-## VNode schema
+## 🔧 VNode structure
 
 A VNode can be:
 
-- `string | number | null | false`
-- A function returning a VNode or VNode[]
-- An object:
+-   Primitive: `string | number | null | false`
+-   Function returning a VNode
+-   Object with the following keys:
 
 ```ts
-type VNode =
-  | string | number | null | false
-  | (() => VNode | VNode[])
-  | {
-      tag?: string;                // default: 'div'
-      class?: string;              // applied as className
-      attr?: Record<string, string | number | boolean | null | undefined>;
-      style?: Record<string, string | number | null | undefined>;
-      text?: string | number;
-      html?: string;               // trusted HTML
-      children?: VNode | VNode[] | (() => VNode | VNode[]);
-      on?: Record<string,
-        Function | {
-          handler: Function;
-          debounce?: number;       // ms
-          throttle?: number;       // ms (leading)
-          options?: AddEventListenerOptions; // e.g. { passive: true }
-        }
-      >;
-      ref?: any;                   // passed through to hooks.onRender
-      signal?: AbortSignal;        // overrides renderer default signal
-    };
-```
-
----
-
-## Renderer API
-
-```ts
-new DomRenderer(options?: {
-  hooks?: {
-    onRender?: (ref: any, el: Element) => void;
-  };
-});
-
-render(vnode: VNode): Node | Node[];
-abort(): void;                     // abort current listeners and reset controller
-setSignal(signal: AbortSignal): this;
-```
-
-### Hooks
-
-- `onRender(ref, el)` — called after every node is created and wired.  
-  `ref` is whatever you put on the VNode (`node.ref`), untouched.
-
----
-
-## Events
-
-You can pass handlers as functions:
-
-```js
-on: { click: (e) => { /* ... */ } }
-```
-
-…or with an options object:
-
-```js
-on: {
-  input: {
-    handler: onInput,
-    debounce: 300,                      // or use throttle: 200
-    options: { passive: true }
-  }
+{
+  tag?: string;     // default: 'div'
+  class?: string;
+  attr?: Record<string, any>;
+  style?: Record<string, any>;
+  text?: string | number;
+  html?: string;    // trusted HTML
+  children?: VNode | VNode[] | (() => VNode | VNode[]);
+  on?: Record<string,
+    Function | {
+      handler: Function;
+      debounce?: number;    // ms
+      throttle?: number;    // ms
+      options?: AddEventListenerOptions;
+    }
+  >;
+  ref?: any;
+  signal?: AbortSignal;     // overrides default signal
 }
 ```
 
-**Abortable listeners** (recommended): listeners use `signal` when present.
+---
 
-```js
-const r = new DomRenderer();
-const ctrl = new AbortController();
-r.setSignal(ctrl.signal);
+## ⚙️ API
 
-const vnode = {
-  tag: 'button',
-  text: 'Abortable',
-  on: { click: () => console.log('clicked') }
-};
+### `new DomRenderer(options?)`
 
-// later:
-ctrl.abort();   // removes listeners bound with this signal
-```
+-   `options.hooks.onRender(ref, el)` → called after each node is created.
 
-> If a VNode contains `signal`, it overrides the renderer default for that node.
+### `render(vnode)`
+
+-   Returns a `Node` or `Node[]`.
+
+### `abort()`
+
+-   Aborts all listeners registered with the **renderer’s current signal**.
+
+### `setSignal(signal)`
+
+-   Use this only if you need to attach a **custom signal**.
+-   In most cases, you don’t need it — calling `.abort()` on the renderer is enough.
 
 ---
 
-## Attributes & styles
+## 🎛 Events
+
+-   Simple function:
+    ```js
+    on: {
+        click: () => console.log("clicked");
+    }
+    ```
+-   With debounce/throttle & options:
+    ```js
+    on: {
+      input: {
+        handler: onInput,
+        debounce: 300,
+        options: { passive: true }
+      }
+    }
+    ```
+
+### Abortable listeners
+
+Each `DomRenderer` has its own built-in `AbortController`.  
+That means you can call `.abort()` on the renderer directly to remove its listeners — no need to call `setSignal()` unless you want to share signals across multiple renderers.
+
+```js
+const r = new DomRenderer();
+
+const vnode = {
+    tag: "button",
+    text: "Abortable",
+    on: { click: () => console.log("X") },
+};
+document.body.appendChild(r.render(vnode));
+
+// later
+r.abort(); // removes all listeners for this renderer
+```
+
+If you want multiple renderers (or other code) to share the same signal, then you can use `setSignal(signal)`.  
+But for most usage, **`.abort()` is all you need**.
+
+---
+
+## 🎨 Attributes & Styles
 
 ```js
 attr: {
   id: 'save',
-  disabled: true,      // boolean true emits the attribute
-  'data-kind': 'primary'
+  disabled: true,
+  'data-role': 'primary'
 },
 style: {
   width: '200px',
-  '--accent': '#09f',  // custom properties supported
+  '--accent': '#09f'
 }
 ```
 
 ---
 
-## Children
-
-- Array, single VNode, or a function that returns them.
+## 👶 Children
 
 ```js
 children: [
-  { tag: 'h2', text: 'Title' },
-  () => ({ tag: 'p', text: 'Lazy child' })
-]
+    { tag: "h2", text: "Title" },
+    () => ({ tag: "p", text: "Generated child" }),
+];
 ```
-
----
-
-## HTML (trusted)
 
 ```js
-{ html: '<strong>Trusted</strong> content' } // beware XSS if user input reaches this
+const animals = ["monkey", "cat", "dog", "banana"];
+const vnode = {
+    tag: "ul",
+    children: [
+        () =>
+            animals.map((item) => {
+                if (item === "banana") {
+                    return {
+                        tag: "li",
+                        text: `🍌 oh no! ${item} is not an animal 😆`,
+                    };
+                }
+                return { tag: "li", text: `🐾 I am a ${item}` };
+            }),
+    ],
+};
 ```
-
-> **Security:** `html` is inserted as raw HTML. Only use trusted content.
 
 ---
 
-## Return type
-
-`render()` returns `Node | Node[]`. Normalize when mounting:
+## ⚠️ HTML (trusted only)
 
 ```js
-const out = r.render(vnode);
-for (const n of (Array.isArray(out) ? out : [out])) root.appendChild(n);
+{
+    html: "<strong>Trusted</strong> content";
+}
 ```
 
----
-
-## SSR
-
-This package targets the browser and uses `document` during rendering.
+> Be careful: raw HTML can cause XSS if user input is injected.
 
 ---
 
-## License
+## 📜 License
 
 MIT © Ragy — see [LICENSE](./LICENSE)
